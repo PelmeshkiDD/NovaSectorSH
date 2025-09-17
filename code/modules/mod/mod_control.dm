@@ -192,6 +192,7 @@
 		set_wearer(user)
 	else if(wearer)
 		unset_wearer()
+	return ..()
 
 /obj/item/mod/control/dropped(mob/user)
 	. = ..()
@@ -215,15 +216,19 @@
 /obj/item/mod/control/allow_attack_hand_drop(mob/user)
 	if(user != wearer)
 		return ..()
+
 	if(active)
 		balloon_alert(wearer, "unit active!")
 		playsound(src, 'sound/machines/scanner/scanbuzz.ogg', 25, FALSE, SILENCED_SOUND_EXTRARANGE)
 		return
+
 	for(var/obj/item/part as anything in get_parts())
 		if(part.loc != src)
 			balloon_alert(user, "parts extended!")
 			playsound(src, 'sound/machines/scanner/scanbuzz.ogg', 25, FALSE, SILENCED_SOUND_EXTRARANGE)
 			return FALSE
+
+	return ..()
 
 /obj/item/mod/control/mouse_drop_dragged(atom/over_object, mob/user)
 	if(user != wearer || !istype(over_object, /atom/movable/screen/inventory/hand))
@@ -374,7 +379,7 @@
 	return cell
 
 /obj/item/mod/control/GetAccess()
-	if(ai_controller)
+	if(ai_controller && req_access)
 		return req_access.Copy()
 	else
 		return ..()
